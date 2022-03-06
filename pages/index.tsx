@@ -54,7 +54,7 @@ const Home: NextPage = () => {
       <main className={`${styles.main} ${popUp && "bg-[#1e1c1c] justify-center items-center "}`}>
         <div className={styles.createUser}>
           <Link href={"/create-user"} passHref>
-            <h1 className={styles.create__user__btn}>Create User</h1>
+            <h1 className={`${styles.create__user__btn}`}>Create User</h1>
           </Link>
           <div>
             <h1 className={styles.delete__btn} onClick={() => { deleteAllUser() }}>Delete All User</h1>
