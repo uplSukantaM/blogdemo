@@ -17,9 +17,6 @@ const Createuser = () => {
 		// console.log(e.target.name, "<<-- e.target.value")
 		setUser({ ...user, [e.target.name]: e.target.value })
 	}
-	useEffect(() => {
-		console.log(user, "<<-- user")
-	}, [user])
 
 	const createUser = async () => {
 		const doc: any = {
