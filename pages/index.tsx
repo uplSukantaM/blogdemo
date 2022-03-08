@@ -10,8 +10,20 @@ import PencilIcon from "@heroicons/react/solid/PencilIcon"
 import DeleteIcon from "@heroicons/react/solid/TrashIcon"
 import CloseIcon from "@heroicons/react/solid/XCircleIcon"
 
-const Home: NextPage = () => {
+export async function getServerSideProps(context: any) {
+  let users = await client.fetch('*[_type == "user"]{firstName, lastName, password, email, _id}')
+  console.log(users, "<<-- users")
+  return {
+    props: {
+      users
+    }
+  }
+}
+
+const Home: NextPage = (props: any) => {
   const router = useRouter()
+  const { users } = props
+  const [usersList, setUsersList] = useState(users)
   const [popUp, setPopUp] = useState<boolean>(false)
   const [user, setUser] = useState({
     id: "",
@@ -20,27 +32,9 @@ const Home: NextPage = () => {
     email: "",
     password: ""
   })
-  const [userList, setUserList] = useState<any[]>([])
-  useEffect(() => {
-    users()
-  }, [])
-
-  const users = async () => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        let query = `*[_type == "user"]`
-        let users = await client.fetch(query)
-        resolve(users)
-        setUserList(users)
-      } catch (error) {
-        console.log(error, "<<-- error")
-        reject(error)
-      }
-    })
-
-  }
 
   const deleteAllUser = async () => {
+    setUsersList([])
     await client.delete({ query: '*[_type == "user"]' })
       .then(async (res) => {
         console.log("All users deleted successfully")
@@ -71,8 +65,8 @@ const Home: NextPage = () => {
     }
   }
 
-  const deleteUser = async (id) => {
-    setUserList(userList.filter(user => user._id !== id))
+  const deleteUser = async (id:string) => {
+    setUsersList(usersList.filter((user: any) => user._id !== id))
     let res = await client.delete(id)
     console.log(res, "<<-- res")
   }
@@ -107,7 +101,7 @@ const Home: NextPage = () => {
               </tr>
             </thead>
             <tbody>
-              {userList && userList.length > 0 && userList?.map((user: any) => (
+              {usersList && usersList.length > 0 && usersList?.map((user: any) => (
                 <tr key={user._id} className="h-11">
                   <td className='text-center'>{`${user.firstName} ${user.lastName}`}</td>
                   <td className='text-center'>{user.email}</td>
@@ -136,58 +130,6 @@ const Home: NextPage = () => {
               ))}
             </tbody>
           </table>
-          {/* {userList && userList.length > 0 && userList?.map((user: any) => (
-            // <div className={`${styles.user} mr-9`} key={user._id}>
-            //   <div className={styles.name}>
-            //     <span>
-            //       <span>Name: </span>
-            //       <span>{`${user.firstName} ${user.lastName}`}</span>
-            //     </span>
-              //   <span className={styles.edit__user__btn} onClick={() => {
-              //     setPopUp(true)
-              //     setUser({
-              //       id: user._id,
-              //       fname: user.firstName,
-              //       lname: user.lastName,
-              //       email: user.email,
-              //       password: user.password
-              //     })
-              //   }}>
-              //     Edit
-              //   </span>
-              // </div>
-            //   <div className="email">
-            //     <span>Email: </span>
-            //     <span>{user.email}</span>
-            //   </div>
-            // </div>
-            <table className="table-auto" key={user._id}>
-              <thead>
-                <tr>
-                  <th>Song</th>
-                  <th>Artist</th>
-                  <th>Year</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>The Sliding Mr. Bones (Next Stop, Pottersville)</td>
-                  <td>Malcolm Lockyer</td>
-                  <td>1961</td>
-                </tr>
-                <tr>
-                  <td>Witchy Woman</td>
-                  <td>The Eagles</td>
-                  <td>1972</td>
-                </tr>
-                <tr>
-                  <td>Shining Star</td>
-                  <td>Earth, Wind, and Fire</td>
-                  <td>1975</td>
-                </tr>
-              </tbody>
-            </table>
-          ))} */}
         </div>
 
       </main >
@@ -207,7 +149,7 @@ const Home: NextPage = () => {
             <input type="email" className='input__field  px-3 py-1 border m-1 outline-none' name="email" id="email" value={user && user.email} placeholder='Enter Email' onChange={(e) => { userDetails(e) }} />
           </div>
           <div>
-            <input type="text" className='input__field  px-3 py-1 border m-1 outline-none' name="password" id="password" value={user && user.password} placeholder='Enter Password' onChange={(e) => { userDetails(e) }} />
+            <input type="password" className='input__field  px-3 py-1 border m-1 outline-none' name="password" id="password" value={user && user.password} placeholder='Enter Password' onChange={(e) => { userDetails(e) }} />
           </div>
           <button className={`${styles.create__user__btn} m-2 `} onClick={() => { updateUser() }}>Update</button>
         </div>

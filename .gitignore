@@ -3,6 +3,7 @@
 # dependencies
 /node_modules
 /studio/node_modules
+/studio/dist
 *node_modules/*
 /.pnp
 .pnp.js

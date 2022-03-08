@@ -5,8 +5,15 @@ import { useRouter } from 'next/router'
 
 const Createuser = () => {
 	const router = useRouter()
-	const [user, setUser] = useState({})
-	const userDetails = (e) => {
+	const [user, setUser] = useState({
+		_type: "user",
+		fname: "",
+		lname: "",
+		email: "",
+		password: "",
+		role: "user",
+	})
+	const userDetails = (e: any) => {
 		// console.log(e.target.name, "<<-- e.target.value")
 		setUser({ ...user, [e.target.name]: e.target.value })
 	}
@@ -15,13 +22,13 @@ const Createuser = () => {
 	}, [user])
 
 	const createUser = async () => {
-		const doc = {
-			_type: "user",
+		const doc: any = {
+			_type: user._type,
 			firstName: user.fname,
 			lastName: user.lname,
 			email: user.email,
 			password: user.password,
-			role: "user"
+			role: user.role
 		}
 		client.create(doc).then((res) => {
 			console.log(res, "<<-- res")
