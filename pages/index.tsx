@@ -12,7 +12,6 @@ import CloseIcon from "@heroicons/react/solid/XCircleIcon"
 
 export async function getServerSideProps(context: any) {
   let users = await client.fetch('*[_type == "user"]{firstName, lastName, password, email, _id}')
-  console.log(users, "<<-- users")
   return {
     props: {
       users
